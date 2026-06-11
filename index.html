@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>คู่มือการทำงาน MAXIMO — PM ประจำปี ฝข</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  :root {
+    --navy: #0B1D35;
+    --navy-mid: #12305A;
+    --teal: #00B4D8;
+    --teal-dark: #0077A8;
+    --teal-light: #CAF0F8;
+    --white: #FFFFFF;
+    --off: #F4F8FB;
+    --muted: #6B8BAE;
+    --border: #D1E3F0;
+    --step-colors: #0077B6, #0E7C7B, #6A0572, #9E3A00, #7B6200, #005B8E, #8B0000, #2D6A00;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans Thai', sans-serif;
+    background: var(--off);
+    color: var(--navy);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    body { background: #fff; font-size: 12px; }
+    .no-print { display: none !important; }
+    .page-break { page-break-before: always; }
+    .step-card { page-break-inside: avoid; box-shadow: none !important; border: 1px solid #ddd; }
+    nav { display: none; }
+    .hero { background: var(--navy) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
+  /* ── TOP NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--navy);
+    border-bottom: 2px solid var(--teal);
+    display: flex; align-items: center; gap: 0;
+    padding: 0 24px;
+    overflow-x: auto;
+  }
+  nav a {
+    color: rgba(255,255,255,0.65);
+    text-decoration: none;
+    font-size: 12px;
+    padding: 12px 14px;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  nav a:hover, nav a.active { color: #fff; border-bottom-color: var(--teal); }
+  .nav-brand {
+    font-size: 13px; font-weight: 600; color: #fff;
+    padding: 12px 16px 12px 0; margin-right: 8px;
+    border-right: 1px solid rgba(255,255,255,0.15);
+    white-space: nowrap; flex-shrink: 0;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--navy);
+    padding: 56px 40px 48px;
+    position: relative; overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; right: -80px; top: -80px;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,180,216,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 0.12em;
+    color: var(--teal);
+    border: 1px solid rgba(0,180,216,0.4);
+    border-radius: 4px;
+    padding: 4px 12px;
+    margin-bottom: 20px;
+  }
+  .hero-title {
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 10px;
+  }
+  .hero-sub {
+    font-size: 15px; color: rgba(255,255,255,0.6);
+    max-width: 560px; margin-bottom: 28px;
+  }
+  .hero-meta {
+    display: flex; gap: 24px; flex-wrap: wrap;
+  }
+  .hero-meta-item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: rgba(255,255,255,0.5);
+  }
+  .hero-meta-item strong { color: #fff; font-weight: 500; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); flex-shrink: 0; }
+
+  /* ── OVERVIEW TABLE ── */
+  .overview {
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    padding: 32px 40px;
+  }
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; letter-spacing: 0.14em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .step-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+  }
+  .step-chip {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--off);
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .step-chip:hover { background: var(--teal-light); border-color: var(--teal); }
+  .chip-no {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; font-weight: 500;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: #fff;
+  }
+  .chip-title { font-size: 13px; font-weight: 500; color: var(--navy); }
+
+  /* ── MAIN LAYOUT ── */
+  .main-wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* ── STEP CARD ── */
+  .step-card {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 32px;
+    box-shadow: 0 2px 12px rgba(11,29,53,0.06);
+  }
+  .card-header {
+    padding: 20px 28px 18px;
+    display: flex; align-items: flex-start; gap: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .card-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; font-weight: 500;
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: #fff;
+    margin-top: 2px;
+  }
+  .card-titles { flex: 1; }
+  .card-title { font-size: 19px; font-weight: 600; color: var(--navy); margin-bottom: 4px; line-height: 1.2; }
+  .card-obj { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  /* ── STEPS TABLE ── */
+  .steps-table {
+    width: 100%; border-collapse: collapse;
+  }
+  .steps-table thead tr { background: var(--off); }
+  .steps-table th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; letter-spacing: 0.1em;
+    color: var(--muted);
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 500;
+  }
+  .steps-table td {
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .steps-table tr:last-child td { border-bottom: none; }
+  .steps-table tr:hover td { background: #F8FBFF; }
+  .step-n {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; font-weight: 500;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: #fff;
+  }
+  .td-num { width: 56px; text-align: center; }
+  .td-action { width: 220px; font-weight: 500; color: var(--navy); }
+  .td-detail { color: #3A5470; }
+
+  /* maximo path */
+  .mpath {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    background: var(--navy);
+    color: var(--teal-light);
+    padding: 2px 8px; border-radius: 4px;
+    white-space: nowrap;
+  }
+  .mpath-sep { opacity: 0.4; margin: 0 1px; }
+
+  /* ── TIP BOX ── */
+  .tip-box {
+    display: flex; gap: 12px;
+    background: #FFFBEB;
+    border-top: 1px solid #FFE08A;
+    padding: 14px 20px;
+    font-size: 13px;
+    color: #6B5000;
+    line-height: 1.5;
+  }
+  .tip-icon { flex-shrink: 0; font-size: 16px; margin-top: 1px; }
+
+  /* ── NOTE TAG ── */
+  .tag {
+    display: inline-block;
+    font-size: 11px; font-weight: 500;
+    padding: 2px 8px; border-radius: 4px;
+    margin-right: 4px;
+  }
+  .tag-warn { background: #FEF3C7; color: #92400E; }
+  .tag-info { background: #DBEAFE; color: #1E40AF; }
+  .tag-ok   { background: #D1FAE5; color: #065F46; }
+
+  /* ── PRINT BUTTON ── */
+  .print-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--teal);
+    color: var(--navy);
+    font-weight: 600; font-size: 13px;
+    padding: 10px 20px;
+    border: none; border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    margin-top: 24px;
+  }
+  .print-btn:hover { background: #00C9F0; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--navy);
+    color: rgba(255,255,255,0.4);
+    font-size: 12px;
+    text-align: center;
+    padding: 20px;
+    border-top: 2px solid var(--teal);
+  }
+  footer strong { color: rgba(255,255,255,0.75); }
+
+  /* ── SCROLL INDICATOR ── */
+  #progress-line {
+    position: fixed; top: 0; left: 0; height: 3px;
+    background: var(--teal);
+    width: 0%; z-index: 9999;
+    transition: width 0.1s linear;
+  }
+</style>
+</head>
+<body>
+
+<div id="progress-line"></div>
+
+<nav id="topNav">
+  <span class="nav-brand">📋 คู่มือ MAXIMO</span>
+  <a href="#overview">ภาพรวม</a>
+  <a href="#step01">01 PM Scheduling</a>
+  <a href="#step02">02 Station ID</a>
+  <a href="#step03">03 เบิกพัสดุ</a>
+  <a href="#step04">04 โอนพัสดุ</a>
+  <a href="#step05">05 จ่ายงาน</a>
+  <a href="#step06">06 MEA Number</a>
+  <a href="#step07">07 รื้อถอน</a>
+  <a href="#step08">08 WBS</a>
+</nav>
+
+<!-- ── HERO ── -->
+<header class="hero">
+  <div class="hero-eyebrow">📄 WORK MANUAL · REV 1.0 · 2568</div>
+  <h1 class="hero-title">คู่มือการทำงาน MAXIMO<br>โดย บส.กคท.ฝคฟ</h1>
+  <p class="hero-sub">ครอบคลุม 8 ขั้นตอนหลักสำหรับ ฟข.</p>
+
+  <div class="hero-meta">
+    <div class="hero-meta-item"><span class="dot"></span><strong>ระบบ</strong> IBM Maximo CMMS</div>
+    <div class="hero-meta-item"><span class="dot"></span><strong>หน่วยงาน</strong> กฟน. (MEA)</div>
+    <div class="hero-meta-item"><span class="dot"></span><strong>ขั้นตอน</strong> 8 ขั้นตอน</div>
+    <div class="hero-meta-item"><span class="dot"></span><strong>จัดทำโดย</strong> บส.กคท.ฝคฟ.</div>
+  </div>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:24px">
+    <a class="print-btn" href="https://meacloud.sharepoint.com/:f:/s/CMMS/IgBr2Em29LO6Sav4GNhLfbx7AXF98RXM4pu2nBit5XpJ8eE?e=0Gk62P" target="_blank">📥 Download คู่มือ (SharePoint)</a>
+    <button class="print-btn no-print" style="background:#12305A;color:#fff" onclick="window.print()">🖨️ พิมพ์ (PDF)</button>
+  </div>
+</header>
+
+<!-- ── OVERVIEW ── -->
+<section class="overview" id="overview">
+  <div class="section-label">ภาพรวม — 8 ขั้นตอนหลัก</div>
+  <div class="step-overview-grid">
+    <a class="step-chip" href="#step01"><span class="chip-no" style="background:#0077B6">01</span><span class="chip-title">PM Scheduling</span></a>
+    <a class="step-chip" href="#step02"><span class="chip-no" style="background:#0E7C7B">02</span><span class="chip-title">Station ID</span></a>
+    <a class="step-chip" href="#step03"><span class="chip-no" style="background:#6A0572">03</span><span class="chip-title">เบิกพัสดุ</span></a>
+    <a class="step-chip" href="#step04"><span class="chip-no" style="background:#9E3A00">04</span><span class="chip-title">โอนพัสดุ</span></a>
+    <a class="step-chip" href="#step05"><span class="chip-no" style="background:#7B6200">05</span><span class="chip-title">จ่ายงาน</span></a>
+    <a class="step-chip" href="#step06"><span class="chip-no" style="background:#005B8E">06</span><span class="chip-title">ติดตั้ง MEA Number</span></a>
+    <a class="step-chip" href="#step07"><span class="chip-no" style="background:#8B0000">07</span><span class="chip-title">รื้อถอน</span></a>
+    <a class="step-chip" href="#step08"><span class="chip-no" style="background:#2D6A00">08</span><span class="chip-title">สร้าง WBS (Noti 12)</span></a>
+  </div>
+</section>
+
+<!-- ── MAIN ── -->
+<div class="main-wrap">
+
+  <!-- ─ STEP 01 ─ -->
+  <div class="step-card page-break" id="step01">
+    <div class="card-header">
+      <div class="card-num" style="background:#0077B6">01</div>
+      <div class="card-titles">
+        <div class="card-title">PM Scheduling</div>
+        <div class="card-obj">วางแผนและกำหนดตารางงาน Preventive Maintenance ประจำปีในระบบ Maximo ให้ครบถ้วนก่อนเริ่มปีงบประมาณ</div>
+      </div>
+    </div>
+    <table class="steps-table">
+      <thead><tr>
+        <th class="td-num">#</th>
+        <th class="td-action">การดำเนินการ</th>
+        <th class="td-detail">รายละเอียด / เส้นทางใน Maximo</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#0077B6">1</span></td>
+          <td class="td-action">เข้าสู่โมดูล PM</td>
+          <td class="td-detail"><span class="mpath">Preventive Maintenance <span class="mpath-sep">›</span> PM List</span> — Login ด้วย User ที่มีสิทธิ์ PM Planner</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#0077B6">2</span></td>
+          <td class="td-action">ค้นหา PM Route</td>
+          <td class="td-detail">Filter ด้วย Site = <strong>ฝข</strong> และ Active = Yes เพื่อดึง PM Route ทั้งหมดในเขตพื้นที่</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#0077B6">3</span></td>
+          <td class="td-action">ตรวจสอบ Frequency</td>
+          <td class="td-detail">ตรวจ Frequency / Estimated Duration ให้ตรงกับ TOR ประจำปี <span class="tag tag-warn">⚠ ต้องตรวจก่อน Generate</span></td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#0077B6">4</span></td>
+          <td class="td-action">Generate Work Orders</td>
+          <td class="td-detail"><span class="mpath">Actions <span class="mpath-sep">›</span> Generate WO</span> — เลือก PM ทั้งหมดในเขต แล้วกด Generate <span class="tag tag-ok">✓ ระบบสร้าง WO อัตโนมัติ</span></td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#0077B6">5</span></td>
+          <td class="td-action">ตรวจสอบ WO Status</td>
+          <td class="td-detail">ไปที่ <span class="mpath">Work Orders <span class="mpath-sep">›</span> Work Order Tracking</span> — ตรวจว่า Status = WAPPR หรือ APPR</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="tip-box">
+      <span class="tip-icon">💡</span>
+      <span><strong>เคล็ดลับ:</strong> ตรวจสอบ PM Calendar ทุกต้นปีงบประมาณก่อน Generate WO — หาก Frequency ผิด จะทำให้จำนวนใบงานผิดทั้งปี</span>
+    </div>
+  </div>
+
+  <!-- ─ STEP 02 ─ -->
+  <div class="step-card" id="step02">
+    <div class="card-header">
+      <div class="card-num" style="background:#0E7C7B">02</div>
+      <div class="card-titles">
+        <div class="card-title">Station ID</div>
+        <div class="card-obj">ระบุและผูกสถานีที่ต้องทำ PM ให้ถูกต้องกับ Work Order ในระบบ Maximo ก่อนส่งช่างลงพื้นที่</div>
+      </div>
+    </div>
+    <table class="steps-table">
+      <thead><tr>
+        <th class="td-num">#</th>
+        <th class="td-action">การดำเนินการ</th>
+        <th class="td-detail">รายละเอียด / เส้นทางใน Maximo</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#0E7C7B">1</span></td>
+          <td class="td-action">เปิด Work Order</td>
+          <td class="td-detail">เปิด WO ที่ Generate จาก PM ใน <span class="mpath">Work Order Tracking</span></td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#0E7C7B">2</span></td>
+          <td class="td-action">ตรวจสอบ Location Field</td>
+          <td class="td-detail">Tab <strong>Work Order</strong> → ช่อง <strong>Location</strong> ต้องไม่ว่าง ถ้าว่างให้ค้นหาจาก Lookup</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#0E7C7B">3</span></td>
+          <td class="td-action">ค้นหา Station ID</td>
+          <td class="td-detail">คลิก 🔍 ในช่อง Location → พิมพ์ชื่อสถานีหรือรหัส Feeder เพื่อค้นหา</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#0E7C7B">4</span></td>
+          <td class="td-action">ยืนยัน Asset</td>
+          <td class="td-detail">ตรวจ Tab <strong>Assets</strong> — Asset ต้องถูกผูกกับ Location นั้น ถ้าไม่มีให้เพิ่มก่อน</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#0E7C7B">5</span></td>
+          <td class="td-action">บันทึก Station Code</td>
+          <td class="td-detail">บันทึก Station Code ลงในช่อง <strong>Long Description</strong> เพิ่มเติม เพื่อให้ช่างอ้างอิงในสนาม</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#0E7C7B">6</span></td>
+          <td class="td-action">แนบเอกสาร</td>
+          <td class="td-detail">Tab <strong>Attachments</strong> → แนบแผนที่สถานีหรือรูปถ่ายประกอบ (ไฟล์ PDF/JPG)</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="tip-box">
+      <span class="tip-icon">💡</span>
+      <span><strong>เคล็ดลับ:</strong> Station ID ต้องตรงกับ Feeder/Line ID ในระบบ GIS ของ กฟน. — ตรวจสอบกับ GIS Team ก่อนบันทึก</span>
+    </div>
+  </div>
+
+  <!-- ─ STEP 03 ─ -->
+  <div class="step-card" id="step03">
+    <div class="card-header">
+      <div class="card-num" style="background:#6A0572">03</div>
+      <div class="card-titles">
+        <div class="card-title">เบิกพัสดุ</div>
+        <div class="card-obj">เบิกวัสดุและอุปกรณ์ที่ต้องใช้ในงาน PM จาก Storeroom ผ่านระบบ Maximo ให้ถูกต้องและครบถ้วน</div>
+      </div>
+    </div>
+    <table class="steps-table">
+      <thead><tr>
+        <th class="td-num">#</th>
+        <th class="td-action">การดำเนินการ</th>
+        <th class="td-detail">รายละเอียด / เส้นทางใน Maximo</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#6A0572">1</span></td>
+          <td class="td-action">เปิด Tab Materials</td>
+          <td class="td-detail">เปิด WO → Tab <strong>Materials</strong> — ตรวจ Planned Materials ที่ระบบกำหนดไว้แล้ว</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#6A0572">2</span></td>
+          <td class="td-action">เพิ่มรายการเบิก</td>
+          <td class="td-detail">คลิก <strong>New Row</strong> → ค้นหา Item Number จาก Item Lookup <span class="tag tag-info">ℹ ค้นได้จากชื่อหรือรหัสสินค้า</span></td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#6A0572">3</span></td>
+          <td class="td-action">ระบุจำนวน</td>
+          <td class="td-detail">กรอก <strong>Qty Requested</strong> ตามปริมาณจริงที่ต้องใช้งาน</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#6A0572">4</span></td>
+          <td class="td-action">เลือก Storeroom</td>
+          <td class="td-detail">เลือก Storeroom ที่ถูกต้อง → ตรวจสอบ Current Balance ว่ามีพอ <span class="tag tag-warn">⚠ หากไม่พอต้องขอ PR ก่อน</span></td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#6A0572">5</span></td>
+          <td class="td-action">Issue Material</td>
+          <td class="td-detail"><span class="mpath">Actions <span class="mpath-sep">›</span> Issue Current MRs</span> — ระบบตัดยอด Stock และบันทึก Material Usage</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#6A0572">6</span></td>
+          <td class="td-action">พิมพ์ใบเบิก</td>
+          <td class="td-detail"><span class="mpath">Actions <span class="mpath-sep">›</span> Print Material Issue Slip</span> — พิมพ์ให้ผู้ควบคุมคลังเซ็นรับ</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="tip-box">
+      <span class="tip-icon">💡</span>
+      <span><strong>เคล็ดลับ:</strong> ตรวจสอบ Stock Level ก่อนเบิก — หากไม่พอ แจ้ง Warehouse ล่วงหน้าอย่างน้อย 3 วันทำการ เพื่อให้ทันส่งช่างลงพื้นที่</span>
+    </div>
+  </div>
+
+  <!-- ─ STEP 04 ─ -->
+  <div class="step-card" id="step04">
+    <div class="card-header">
+      <div class="card-num" style="background:#9E3A00">04</div>
+      <div class="card-titles">
+        <div class="card-title">โอนพัสดุ</div>
+        <div class="card-obj">โอนย้ายพัสดุระหว่างใบงาน PM หรือระหว่าง Storeroom เมื่อมีการเปลี่ยนแปลงขอบเขตงาน</div>
+      </div>
+    </div>
+    <table class="steps-table">
+      <thead><tr>
+        <th class="td-num">#</th>
+        <th class="td-action">การดำเนินการ</th>
+        <th class="td-detail">รายละเอียด / เส้นทางใน Maximo</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#9E3A00">1</span></td>
+          <td class="td-action">เปิดหน้า Transfer</td>
+          <td class="td-detail"><span class="mpath">Inventory <span class="mpath-sep">›</span> Issue and Transfer</span> — เลือกประเภทธุรกรรม</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#9E3A00">2</span></td>
+          <td class="td-action">เลือกประเภทการโอน</td>
+          <td class="td-detail"><strong>Transfer</strong> (โอนระหว่าง Storeroom) หรือ <strong>Return</strong> (คืนของจาก WO) ขึ้นอยู่กับสถานการณ์</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#9E3A00">3</span></td>
+          <td class="td-action">ระบุ From/To</td>
+          <td class="td-detail">กรอก <strong>From Storeroom</strong> และ <strong>To Storeroom</strong> / To Work Order ให้ถูกต้อง</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#9E3A00">4</span></td>
+          <td class="td-action">ค้นหา Item</td>
+          <td class="td-detail">ค้นหา Item ที่ต้องการโอนจาก Item Lookup และตรวจสอบ Balance ต้นทาง</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#9E3A00">5</span></td>
+          <td class="td-action">ยืนยันการโอน</td>
+          <td class="td-detail">ระบุจำนวนและคลิก <strong>Save</strong> — ระบบจะตัดยอดต้นทางและเพิ่มปลายทางทันที</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#9E3A00">6</span></td>
+          <td class="td-action">พิมพ์ใบโอน</td>
+          <td class="td-detail">พิมพ์ Transfer Slip เป็นหลักฐานประกอบเอกสาร <span class="tag tag-warn">⚠ ต้องได้รับอนุมัติก่อนโอน</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="tip-box">
+      <span class="tip-icon">💡</span>
+      <span><strong>เคล็ดลับ:</strong> การโอนพัสดุทุกครั้งต้องได้รับอนุมัติจากหัวหน้างานก่อน — บันทึกชื่อผู้อนุมัติในช่อง Memo เพื่อการตรวจสอบย้อนหลัง</span>
+    </div>
+  </div>
+
+  <!-- ─ STEP 05 ─ -->
+  <div class="step-card" id="step05">
+    <div class="card-header">
+      <div class="card-num" style="background:#7B6200">05</div>
+      <div class="card-titles">
+        <div class="card-title">จ่ายงาน</div>
+        <div class="card-obj">กำหนดและมอบหมายช่างผู้รับผิดชอบงาน PM แต่ละใบงาน พร้อม Dispatch ผ่านระบบ Maximo</div>
+      </div>
+    </div>
+    <table class="steps-table">
+      <thead><tr>
+        <th class="td-num">#</th>
+        <th class="td-action">การดำเนินการ</th>
+        <th class="td-detail">รายละเอียด / เส้นทางใน Maximo</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#7B6200">1</span></td>
+          <td class="td-action">เปิด Tab Labor</td>
+          <td class="td-detail">เปิด WO → Tab <strong>Labor</strong> — ตรวจ Planned Labor ที่ระบบกำหนดจาก PM Route</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#7B6200">2</span></td>
+          <td class="td-action">เพิ่มช่าง</td>
+          <td class="td-detail">คลิก <strong>New Row</strong> → ค้นหา Craft หรือ Person จาก Labor Lookup</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#7B6200">3</span></td>
+          <td class="td-action">ระบุชั่วโมง</td>
+          <td class="td-detail">กรอก <strong>Regular Hours</strong> ตามที่คาดว่าจะใช้จริง (เป็นชั่วโมงทศนิยม เช่น 2.5)</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#7B6200">4</span></td>
+          <td class="td-action">กำหนดวันเวลา</td>
+          <td class="td-detail">กรอก <strong>Start Date</strong> และ <strong>Finish Date</strong> ให้ตรงกับแผนงานจริง</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#7B6200">5</span></td>
+          <td class="td-action">Approve และ Dispatch</td>
+          <td class="td-detail"><span class="mpath">Actions <span class="mpath-sep">›</span> Change Status <span class="mpath-sep">›</span> APPR</span> → จากนั้น <span class="mpath">Dispatch</span> เพื่อส่งงานให้ช่าง</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#7B6200">6</span></td>
+          <td class="td-action">แจ้งช่าง</td>
+          <td class="td-detail">แจ้งผ่าน Mobile Maximo, Line หรือส่ง Work Order Printout ให้ช่างก่อนลงพื้นที่</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="tip-box">
+      <span class="tip-icon">💡</span>
+      <span><strong>เคล็ดลับ:</strong> ตรวจสอบ Craft Availability ก่อน Dispatch ทุกครั้ง — ใช้ Assignment Manager ใน Maximo เพื่อดูภาระงานของช่างแต่ละคน</span>
+    </div>
+  </div>
+
+  <!-- ─ STEP 06 ─ -->
+  <div class="step-card" id="step06">
+    <div class="card-header">
+      <div class="card-num" style="background:#005B8E">06</div>
+      <div class="card-titles">
+        <div class="card-title">ติดตั้ง MEA Number</div>
+        <div class="card-obj">บันทึกหมายเลข MEA ของอุปกรณ์ที่ติดตั้งใหม่ลงในระบบ Asset Maximo เพื่อความถูกต้องของ Asset Registry</div>
+      </div>
+    </div>
+    <table class="steps-table">
+      <thead><tr>
+        <th class="td-num">#</th>
+        <th class="td-action">การดำเนินการ</th>
+        <th class="td-detail">รายละเอียด / เส้นทางใน Maximo</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#005B8E">1</span></td>
+          <td class="td-action">เปิด Actuals Assets</td>
+          <td class="td-detail">WO → Tab <strong>Actuals</strong> → Sub-tab <strong>Assets</strong> (ดูอุปกรณ์ที่ใช้จริงในงาน)</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#005B8E">2</span></td>
+          <td class="td-action">ค้นหาหรือสร้าง Asset</td>
+          <td class="td-detail">ค้นหา Asset เดิมจาก Asset # — ถ้าเป็นของใหม่ให้ไปที่ <span class="mpath">Assets <span class="mpath-sep">›</span> New Asset</span></td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#005B8E">3</span></td>
+          <td class="td-action">กรอก MEA Serial Number</td>
+          <td class="td-detail">กรอกหมายเลข MEA ในช่อง <strong>Serial #</strong> ให้ตรงกับป้ายบนอุปกรณ์ <span class="tag tag-warn">⚠ ห้ามซ้ำกัน</span></td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#005B8E">4</span></td>
+          <td class="td-action">เชื่อม Location</td>
+          <td class="td-detail">ระบุ <strong>Location</strong> ให้ตรงกับสถานีที่ติดตั้ง (Station ID จาก Step 02)</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#005B8E">5</span></td>
+          <td class="td-action">บันทึก Installation Date</td>
+          <td class="td-detail">กรอก <strong>Install Date</strong> เป็นวันที่ติดตั้งจริงในสนาม ไม่ใช่วันที่บันทึก</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#005B8E">6</span></td>
+          <td class="td-action">แนบรูปถ่าย</td>
+          <td class="td-detail">Tab <strong>Attachments</strong> → อัปโหลดรูปถ่ายป้าย MEA Number ที่ชัดเจนเป็นหลักฐาน</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="tip-box">
+      <span class="tip-icon">💡</span>
+      <span><strong>เคล็ดลับ:</strong> MEA Number ต้องไม่ซ้ำในระบบ — ค้นหาด้วย Serial # ก่อนบันทึกทุกครั้ง ถ้าซ้ำให้ประสานงาน Asset Team ทันที</span>
+    </div>
+  </div>
+
+  <!-- ─ STEP 07 ─ -->
+  <div class="step-card" id="step07">
+    <div class="card-header">
+      <div class="card-num" style="background:#8B0000">07</div>
+      <div class="card-titles">
+        <div class="card-title">รื้อถอน</div>
+        <div class="card-obj">บันทึกการถอดอุปกรณ์เก่าออกจากระบบ จัดการ Asset Status และส่งต่อกระบวนการกำจัดทรัพย์สิน</div>
+      </div>
+    </div>
+    <table class="steps-table">
+      <thead><tr>
+        <th class="td-num">#</th>
+        <th class="td-action">การดำเนินการ</th>
+        <th class="td-detail">รายละเอียด / เส้นทางใน Maximo</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#8B0000">1</span></td>
+          <td class="td-action">เปิด WO Tab Assets</td>
+          <td class="td-detail">เปิด WO → Tab <strong>Assets</strong> → ค้นหา Asset ที่จะรื้อถอนด้วย Asset # หรือชื่อ</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#8B0000">2</span></td>
+          <td class="td-action">เปลี่ยน Asset Status</td>
+          <td class="td-detail"><span class="mpath">Actions <span class="mpath-sep">›</span> Change Status <span class="mpath-sep">›</span> Decommissioned</span> <span class="tag tag-warn">⚠ ไม่สามารถยกเลิกได้</span></td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#8B0000">3</span></td>
+          <td class="td-action">บันทึก Removal Date</td>
+          <td class="td-detail">กรอก <strong>Removal Date</strong> ให้ตรงกับวันรื้อถอนจริง พร้อมระบุสาเหตุในช่อง Remarks</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#8B0000">4</span></td>
+          <td class="td-action">โอนไป Disposal</td>
+          <td class="td-detail">เปลี่ยน Location ของ Asset → <strong>DISPOSAL</strong> หรือ Scrap Location ที่กำหนดไว้</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#8B0000">5</span></td>
+          <td class="td-action">แนบหลักฐาน</td>
+          <td class="td-detail">Tab <strong>Attachments</strong> → แนบรูปถ่ายก่อน-หลังรื้อถอน และใบบันทึกรื้อถอน</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#8B0000">6</span></td>
+          <td class="td-action">ปิด Work Order</td>
+          <td class="td-detail"><span class="mpath">Actions <span class="mpath-sep">›</span> Change Status <span class="mpath-sep">›</span> COMP</span> — ปิด WO หลังรื้อถอนเสร็จและบันทึกครบ</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="tip-box">
+      <span class="tip-icon">💡</span>
+      <span><strong>เคล็ดลับ:</strong> ถ่ายรูปป้าย Serial Number บนอุปกรณ์ก่อนรื้อถอนทุกครั้ง — เป็นหลักฐานสำคัญในกรณีที่ต้องตรวจสอบย้อนหลัง</span>
+    </div>
+  </div>
+
+  <!-- ─ STEP 08 ─ -->
+  <div class="step-card" id="step08">
+    <div class="card-header">
+      <div class="card-num" style="background:#2D6A00">08</div>
+      <div class="card-titles">
+        <div class="card-title">สร้าง WBS (Noti 12)</div>
+        <div class="card-obj">สร้าง Work Breakdown Structure สำหรับงาน PM ตาม Notification Type 12 เพื่อการวางแผนต้นทุนและทรัพยากร</div>
+      </div>
+    </div>
+    <table class="steps-table">
+      <thead><tr>
+        <th class="td-num">#</th>
+        <th class="td-action">การดำเนินการ</th>
+        <th class="td-detail">รายละเอียด / เส้นทางใน Maximo</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#2D6A00">1</span></td>
+          <td class="td-action">เปิดโมดูล Notification</td>
+          <td class="td-detail"><span class="mpath">Work Orders <span class="mpath-sep">›</span> Service Requests</span> หรือ <span class="mpath">Notifications</span> → คลิก <strong>New</strong></td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#2D6A00">2</span></td>
+          <td class="td-action">สร้าง Notification Type 12</td>
+          <td class="td-detail">ระบุ <strong>Class = PM</strong> และ <strong>Type = 12</strong> ในช่อง Classification ให้ถูกต้อง</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#2D6A00">3</span></td>
+          <td class="td-action">กรอก Description</td>
+          <td class="td-detail">กรอก Description (สั้น) และ Long Description (รายละเอียดเต็ม) ให้ชัดเจน</td>
+        </tr>
+        <tr>
+          <td class="td-num"><span class="step-n" style="background:#2D6A00">4</span></td>
+          <td class="td-action">เชื่อม WO หลัก</td>
+          <td class="td-detail">ระบุ <strong>Related WO</strong> → ผูก Notification กับ Work Order PM หลักของเขต</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div><!-- /main-wrap -->
+
+<footer>
+  <strong>คู่มือการทำงาน MAXIMO — PM ประจำปี ฝข</strong><br>
+  โดย บส.กคท.ฝคฟ. | กฟน. (Metropolitan Electricity Authority) | Rev 1.0 · 2568
+</footer>
+
+<script>
+  /* scroll progress */
+  window.addEventListener('scroll', () => {
+    const el = document.getElementById('progress-line');
+    const h = document.documentElement;
+    const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    el.style.width = Math.min(pct, 100) + '%';
+  });
+
+  /* active nav highlight */
+  const sections = document.querySelectorAll('[id]');
+  const navLinks = document.querySelectorAll('nav a');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        const active = document.querySelector(`nav a[href="#${e.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
